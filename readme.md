@@ -3,7 +3,7 @@ To make sure mybb doesn't set cookies when cookies are disabled, 2 files need sm
 inc/functions.php: 
 ```php
 function my_setcookie($name, $value="", $expires="", $httponly=false, $samesite="", $bypass_cookieopt=false)
-  global $mybb;
+	global $mybb;
 
 	//Avoid setting cookies when cookies are not allowed.
 	if(!$bypass_cookieopt && isset($mybb->cookies['allow_cookies']) && $mybb->cookies['allow_cookies'] == '0')
