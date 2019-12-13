@@ -1,6 +1,22 @@
+Fork: this fork is a modified version of the cookie law plugin to update it to work properly in our server + some changes that are exclusively relevent to our site.
+To make sure mybb doesn't set cookies when cookies are disabled, 2 files need small changes:
+inc/functions.php: 
+```php
+function my_setcookie($name, $value="", $expires="", $httponly=false, $samesite="", $bypass_cookieopt=false)
+  global $mybb;
+
+  //Avoid setting cookies when cookies are not allowed.
+	if(!$bypass_cookieopt && isset($mybb->cookies['allow_cookies']) && $mybb->cookies['allow_cookies'] == '0')
+		return;
+```
+jscripts/general.js (head of the Cookie.set function), : 
+```js
+		if(Cookie.get('allow_cookies') !== '1')
+			return
+```
+
+
 This plugin is unlikely to receive any further updates.
-
-
 
 Name: Cookie Law
 Description: Give information and gain consent for cookies to be set by the forum.
