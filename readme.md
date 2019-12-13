@@ -5,14 +5,14 @@ inc/functions.php:
 function my_setcookie($name, $value="", $expires="", $httponly=false, $samesite="", $bypass_cookieopt=false)
   global $mybb;
 
-  //Avoid setting cookies when cookies are not allowed.
+	//Avoid setting cookies when cookies are not allowed.
 	if(!$bypass_cookieopt && isset($mybb->cookies['allow_cookies']) && $mybb->cookies['allow_cookies'] == '0')
 		return;
 ```
-jscripts/general.js (head of the Cookie.set function), : 
+jscripts/general.js (insert in the head of the Cookie.set function), : 
 ```js
-		if(Cookie.get('allow_cookies') !== '1')
-			return
+if(Cookie.get('allow_cookies') !== '1')
+	return
 ```
 
 
