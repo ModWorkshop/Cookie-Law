@@ -2,7 +2,7 @@ Fork: this fork is a modified version of the cookie law plugin to update it to w
 To make sure mybb doesn't set cookies when cookies are disabled, 2 files need small changes:
 inc/functions.php: 
 ```php
-function my_setcookie($name, $value="", $expires="", $httponly=false, $samesite="", $bypass_cookieopt=false)
+function my_setcookie($name, $value="", $expires="", $httponly=false, $samesite="", $bypass_cookieopt=false) {
 	global $mybb;
 
 	//Avoid setting cookies when cookies are not allowed.
