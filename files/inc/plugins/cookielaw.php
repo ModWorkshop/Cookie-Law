@@ -20,9 +20,8 @@
 if(!defined("IN_MYBB"))
 	die("Direct initialization of this file is not allowed.<br /><br />Please make sure IN_MYBB is defined.");
 
-$plugins->add_hook('global_end', 'cookielaw_global_end');
-$plugins->add_hook('misc_start', 'cookielaw_misc');
-$plugins->add_hook('admin_load', 'cookielaw_clear_cookies');
+$plugins->add_hook('global_end', 'cookielaw_clear_cookies');
+$plugins->add_hook('misc_start', 'cookielaw_clear_cookies');
 
 function cookielaw_info(){
 	return [
@@ -35,93 +34,6 @@ function cookielaw_info(){
 		"compatibility" => "16*,18*",
 		"codename" => "cookielaw"
 	];
-}
-
-function cookielaw_activate(){
-	global $db;
-	
-	cookielaw_deactivate();
-	
-	require_once MYBB_ROOT . 'inc/adminfunctions_templates.php';
-	
-	$settings_group = [
-		"name" => "cookielaw",
-		"title" => "Cookie Law Settings",
-		"description" => "Settings for the cookie law plugin.",
-		"disporder" => "28",
-		"isdefault" => 0
-	];
-	$db->insert_query("settinggroups", $settings_group);
-	$gid = $db->insert_id();
-	
-	$settings = [];
-	$settings[] = [
-		"name" => "cookielaw_method",
-		"title" => "Display Method",
-		"description" => "How do you want the message to function?<br /><strong>Notify:</strong> A message will be displayed notifying users that cookies are used, but no method of opting out.<br /><strong>Opt In/Out:</strong> Give people a choice on whether they want to accept the use of cookies or not.",
-		"optionscode" => "radio
-notify=Notify
-opt=Opt In/Out",
-		"value" => "notify"
-	];
-	$i = 1;
-	foreach($settings as $setting){
-		$insert = [
-			"name" => $db->escape_string($setting['name']),
-			"title" => $db->escape_string($setting['title']),
-			"description" => $db->escape_string($setting['description']),
-			"optionscode" => $db->escape_string($setting['optionscode']),
-			"value" => $db->escape_string($setting['value']),
-			"disporder" => intval($i),
-			"gid" => intval($gid),
-		];
-		$db->insert_query("settings", $insert);
-		$i++;
-	}
-	
-	rebuild_settings();
-}
-
-function cookielaw_deactivate(){
-	global $mybb, $db;
-
-	require_once MYBB_ROOT . 'inc/adminfunctions_templates.php';
-	
-	$db->delete_query("settinggroups", "name = 'cookielaw'");
-	
-	$settings = ["cookielaw_method"];
-	$settings = "'" . implode("','", $settings) . "'";
-	$db->delete_query("settings", "name IN ({$settings})");
-	
-	rebuild_settings();
-}
-
-function cookielaw_global_end(){
-	cookielaw_clear_cookies();
-}
-
-function cookielaw_misc() {
-	global $mybb, $lang, $templates, $theme, $cookielaw_info, $header, $headerinclude, $footer;
-	
-	if($mybb->input['action'] == 'cookielaw_change'){
-		if((int)$mybb->input['disallow'] === 1){
-			cookielaw_clear_cookies();
-			my_setcookie('allow_cookies', '0', null, null, null, true);
-		}
-		else{
-			my_setcookie('allow_cookies', '1', null, null, null, true);
-
-			if($mybb->input['okay'])
-				$lang->cookielaw_redirect = '';
-		}
-
-		if((int)$mybb->input['back_to_home'] === 1)
-			header('LOCATION: /');
-		else{
-			Utils::api_init();
-			Utils::json_echo(['success'=>1]);
-		}
-	}
 }
 
 function cookielaw_clear_cookies(){
@@ -260,4 +172,3 @@ function cookielaw_get_cookies($all = false){
 	
 	return $cookies;
 }
-?>
